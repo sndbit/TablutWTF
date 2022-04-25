@@ -1,0 +1,81 @@
+Apr 06, 2022 9:25:30 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut <init>
+FINE: Players:	fake	vs	fake
+Apr 06, 2022 9:25:30 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut <init>
+FINE: Repeated moves allowed:	99	Cache:	0
+Apr 06, 2022 9:25:30 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut <init>
+FINE: Inizio partita
+Apr 06, 2022 9:25:30 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut <init>
+FINE: Stato:
+OOOBBBOOO
+OOOOBOOOO
+OOOOWOOOO
+BOOOWOOOB
+BBWWKWWBB
+BOOOWOOOB
+OOOOWOOOO
+OOOOBOOOO
+OOOBBBOOO
+-
+B
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from e9 to g6
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+WARNING: Mossa in diagonale
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from a6 to h9
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+WARNING: Mossa in diagonale
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from a6 to b7
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+WARNING: Mossa in diagonale
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from d1 to a3
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+WARNING: Mossa in diagonale
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from a6 to h8
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+WARNING: Mossa in diagonale
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from i6 to h6
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut movePawn
+FINE: Movimento pedina
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Current draw cache size: 1
+Apr 06, 2022 9:25:41 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Stato:
+OOOBBBOOO
+OOOOBOOOO
+OOOWOOOOO
+BOOOWOOOB
+BBWWKWWBB
+BOOOWOOBO
+OOOOWOOOO
+OOOOBOOOO
+OOOBBBOOO
+-
+W
+Apr 06, 2022 9:25:45 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from a5 to d8
+Apr 06, 2022 9:25:45 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+WARNING: Mossa in diagonale
+Apr 06, 2022 9:25:45 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Turn: B Pawn from b5 to b3
+Apr 06, 2022 9:25:45 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut movePawn
+FINE: Movimento pedina
+Apr 06, 2022 9:25:45 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Current draw cache size: 1
+Apr 06, 2022 9:25:45 PM it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut checkMove
+FINE: Stato:
+OOOBBBOOO
+OOOOBOOOO
+OBOWOOOOO
+BOWOWOOOB
+BOOWKWWBB
+BOOOWOOBO
+OOOOWOOOO
+OOOOBOOOO
+OOOBBBOOO
+-
+W

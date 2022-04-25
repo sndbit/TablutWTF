@@ -1,0 +1,24 @@
+Apr 06, 2022 9:17:25 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Accensione server
+Apr 06, 2022 9:17:25 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Partita di Tablut
+Apr 06, 2022 9:17:25 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Waiting for white connection..
+Apr 06, 2022 9:18:49 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: White player connected
+Apr 06, 2022 9:18:49 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Lettura nome player bianco in corso..
+Apr 06, 2022 9:18:50 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: White player name:	random
+Apr 06, 2022 9:18:50 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Waiting for Black connection..
+Apr 06, 2022 9:18:50 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Accettata connessione con client giocatore Nero
+Apr 06, 2022 9:18:50 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Lettura nome player nero in corso..
+Apr 06, 2022 9:18:50 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Black player name:	random
+Apr 06, 2022 9:18:50 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+FINE: Errore invio messaggio ai giocatori
+Apr 06, 2022 9:18:50 PM it.unibo.ai.didattica.competition.tablut.server.Server run
+WARNING: Chiusura sistema
