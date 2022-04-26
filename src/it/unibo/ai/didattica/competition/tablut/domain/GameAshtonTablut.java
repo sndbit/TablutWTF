@@ -1,6 +1,7 @@
 package it.unibo.ai.didattica.competition.tablut.domain;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -11,7 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+
+
 import it.unibo.ai.didattica.competition.tablut.exceptions.*;
+import it.unibo.ai.didattica.competition.tablut.heuristic.BlackHeuristic;
+import it.unibo.ai.didattica.competition.tablut.heuristic.Heuristic;
 
 /**
  * 
@@ -21,7 +26,7 @@ import it.unibo.ai.didattica.competition.tablut.exceptions.*;
  * @author A. Piretti, Andrea Galassi
  *
  */
-public class GameAshtonTablut implements Game {
+public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game<State, Action, State.Turn>  {
 
 	/**
 	 * Number of repeated states that can occur before a draw
@@ -748,6 +753,378 @@ public class GameAshtonTablut implements Game {
 	public void endGame(State state) {
 		this.loggGame.fine("Stato:\n"+state.toString());
 	}
+//----------------------************-----
+	
+	public boolean isCorrectMove(State state, Action a) throws BoardException, ActionException, StopException, PawnException, DiagonalException, ClimbingException,
+	ThroneException, OccupitedException, ClimbingCitadelException, CitadelException {
+		/*Credits to Galassi*/
+		this.loggGame.fine(a.toString());
+		// controllo la mossa
+		if (a.getTo().length() != 2 || a.getFrom().length() != 2) {
+			this.loggGame.warning("Formato mossa errato");
+			throw new ActionException(a);
+		}
+		int columnFrom = a.getColumnFrom();
+		int columnTo = a.getColumnTo();
+		int rowFrom = a.getRowFrom();
+		int rowTo = a.getRowTo();
 
+		// controllo se sono fuori dal tabellone
+		if (columnFrom > state.getBoard().length - 1 || rowFrom > state.getBoard().length - 1
+				|| rowTo > state.getBoard().length - 1 || columnTo > state.getBoard().length - 1 || columnFrom < 0
+				|| rowFrom < 0 || rowTo < 0 || columnTo < 0) {
+			this.loggGame.warning("Mossa fuori tabellone");
+			throw new BoardException(a);
+		}
+
+		// controllo che non vada sul trono
+		if (state.getPawn(rowTo, columnTo).equalsPawn(State.Pawn.THRONE.toString())) {
+			this.loggGame.warning("Mossa sul trono");
+			throw new ThroneException(a);
+		}
+
+		// controllo la casella di arrivo
+		if (!state.getPawn(rowTo, columnTo).equalsPawn(State.Pawn.EMPTY.toString())) {
+			this.loggGame.warning("Mossa sopra una casella occupata");
+			throw new OccupitedException(a);
+		}
+		if (this.citadels.contains(state.getBox(rowTo, columnTo))
+				&& !this.citadels.contains(state.getBox(rowFrom, columnFrom))) {
+			this.loggGame.warning("Mossa che arriva sopra una citadel");
+			throw new CitadelException(a);
+		}
+		if (this.citadels.contains(state.getBox(rowTo, columnTo))
+				&& this.citadels.contains(state.getBox(rowFrom, columnFrom))) {
+			if (rowFrom == rowTo) {
+				if (columnFrom - columnTo > 5 || columnFrom - columnTo < -5) {
+					this.loggGame.warning("Mossa che arriva sopra una citadel");
+					throw new CitadelException(a);
+				}
+			} else {
+				if (rowFrom - rowTo > 5 || rowFrom - rowTo < -5) {
+					this.loggGame.warning("Mossa che arriva sopra una citadel");
+					throw new CitadelException(a);
+				}
+			}
+
+		}
+
+		// controllo se cerco di stare fermo
+		if (rowFrom == rowTo && columnFrom == columnTo) {
+			this.loggGame.warning("Nessuna mossa");
+			throw new StopException(a);
+		}
+
+		// controllo se sto muovendo una pedina giusta
+		if (state.getTurn().equalsTurn(State.Turn.WHITE.toString())) {
+			if (!state.getPawn(rowFrom, columnFrom).equalsPawn("W")
+					&& !state.getPawn(rowFrom, columnFrom).equalsPawn("K")) {
+				this.loggGame.warning("Giocatore " + a.getTurn() + " cerca di muovere una pedina avversaria");
+				throw new PawnException(a);
+			}
+		}
+		if (state.getTurn().equalsTurn(State.Turn.BLACK.toString())) {
+			if (!state.getPawn(rowFrom, columnFrom).equalsPawn("B")) {
+				this.loggGame.warning("Giocatore " + a.getTurn() + " cerca di muovere una pedina avversaria");
+				throw new PawnException(a);
+			}
+		}
+
+		// controllo di non muovere in diagonale
+		if (rowFrom != rowTo && columnFrom != columnTo) {
+			this.loggGame.warning("Mossa in diagonale");
+			throw new DiagonalException(a);
+		}
+
+		// controllo di non scavalcare pedine
+		if (rowFrom == rowTo) {
+			if (columnFrom > columnTo) {
+				for (int i = columnTo; i < columnFrom; i++) {
+					if (!state.getPawn(rowFrom, i).equalsPawn(State.Pawn.EMPTY.toString())) {
+						if (state.getPawn(rowFrom, i).equalsPawn(State.Pawn.THRONE.toString())) {
+							this.loggGame.warning("Mossa che scavalca il trono");
+							throw new ClimbingException(a);
+						} else {
+							this.loggGame.warning("Mossa che scavalca una pedina");
+							throw new ClimbingException(a);
+						}
+					}
+					if (this.citadels.contains(state.getBox(rowFrom, i))
+							&& !this.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
+						this.loggGame.warning("Mossa che scavalca una citadel");
+						throw new ClimbingCitadelException(a);
+					}
+				}
+			} else {
+				for (int i = columnFrom + 1; i <= columnTo; i++) {
+					if (!state.getPawn(rowFrom, i).equalsPawn(State.Pawn.EMPTY.toString())) {
+						if (state.getPawn(rowFrom, i).equalsPawn(State.Pawn.THRONE.toString())) {
+							this.loggGame.warning("Mossa che scavalca il trono");
+							throw new ClimbingException(a);
+						} else {
+							this.loggGame.warning("Mossa che scavalca una pedina");
+							throw new ClimbingException(a);
+						}
+					}
+					if (this.citadels.contains(state.getBox(rowFrom, i))
+							&& !this.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
+						this.loggGame.warning("Mossa che scavalca una citadel");
+						throw new ClimbingCitadelException(a);
+					}
+				}
+			}
+		} else {
+			if (rowFrom > rowTo) {
+				for (int i = rowTo; i < rowFrom; i++) {
+					if (!state.getPawn(i, columnFrom).equalsPawn(State.Pawn.EMPTY.toString())) {
+						if (state.getPawn(i, columnFrom).equalsPawn(State.Pawn.THRONE.toString())) {
+							this.loggGame.warning("Mossa che scavalca il trono");
+							throw new ClimbingException(a);
+						} else {
+							this.loggGame.warning("Mossa che scavalca una pedina");
+							throw new ClimbingException(a);
+						}
+					}
+					if (this.citadels.contains(state.getBox(i, columnFrom))
+							&& !this.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
+						this.loggGame.warning("Mossa che scavalca una citadel");
+						throw new ClimbingCitadelException(a);
+					}
+				}
+			} else {
+				for (int i = rowFrom + 1; i <= rowTo; i++) {
+					if (!state.getPawn(i, columnFrom).equalsPawn(State.Pawn.EMPTY.toString())) {
+						if (state.getPawn(i, columnFrom).equalsPawn(State.Pawn.THRONE.toString())) {
+							this.loggGame.warning("Mossa che scavalca il trono");
+							throw new ClimbingException(a);
+						} else {
+							this.loggGame.warning("Mossa che scavalca una pedina");
+							throw new ClimbingException(a);
+						}
+					}
+					if (this.citadels.contains(state.getBox(i, columnFrom))
+							&& !this.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
+						this.loggGame.warning("Mossa che scavalca una citadel");
+						throw new ClimbingCitadelException(a);
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	
+	
+	
+	@Override
+	public List<Action> getActions(State state) {
+		State.Turn turn = state.getTurn();
+
+		List<Action> possibleActions = new ArrayList<Action>();
+
+		for (int i = 0; i < state.getBoard().length; i++) {
+			for (int j = 0; j < state.getBoard().length; j++) {
+
+				// if pawn color  is equal of turn color
+				if (state.getPawn(i, j).toString().equals(turn.toString()) ||
+						(state.getPawn(i, j).equals(State.Pawn.KING) && turn.equals(State.Turn.WHITE)) ) {
+
+					// search on top of pawn
+					for (int k=i-1; k>=0; k--) {
+
+						// break if pawn is out of citadels and it is moving on a citadel
+						if (!citadels.contains(state.getBox(i, j)) && citadels.contains(state.getBox(k, j))) {
+							break;
+						}
+
+						// check if we are moving on a empty cell
+						else if (state.getPawn(k, j).equalsPawn(State.Pawn.EMPTY.toString())) {
+
+							String from = state.getBox(i, j);
+							String to = state.getBox(k, j);
+
+							Action action = null;
+							try {
+								action = new Action(from, to, turn);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+
+							// check if action is admissible and if it is, add it to list possibleActions
+							try {
+								isCorrectMove(state.clone(), action);
+								possibleActions.add(action);
+
+							} catch (Exception e) {
+
+							}
+						} else {
+							// there is a pawn in the same column and it cannot be crossed
+							break;
+						}
+					}
+
+					// search on bottom of pawn
+					for (int k=i+1; k<state.getBoard().length; k++) {
+
+						// break if pawn is out of citadels and it is moving on a citadel
+						if (!citadels.contains(state.getBox(i, j)) && citadels.contains(state.getBox(k, j))) {
+							break;
+						}
+
+						// check if we are moving on a empty cell
+						else if (state.getPawn(k, j).equalsPawn(State.Pawn.EMPTY.toString())){
+
+							String from = state.getBox(i, j);
+							String to = state.getBox(k, j);
+
+							Action action = null;
+							try {
+								action = new Action(from, to, turn);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+
+							// check if action is admissible and if it is, add it to list possibleActions
+							try {
+								isCorrectMove(state.clone(), action);
+								possibleActions.add(action);
+
+							} catch (Exception e) {
+
+							}
+						} else {
+							// there is a pawn in the same column and it cannot be crossed
+							break;
+						}
+					}
+
+					// search on left of pawn
+					for (int k=j-1; k>=0; k--) {
+
+
+						// break if pawn is out of citadels and it is moving on a citadel
+						if (!citadels.contains(state.getBox(i, j)) && citadels.contains(state.getBox(i, k))) {
+							break;
+						}
+
+						// check if we are moving on a empty cell
+						else if (state.getPawn(i, k).equalsPawn(State.Pawn.EMPTY.toString())){
+
+							String from = state.getBox(i, j);
+							String to = state.getBox(i, k);
+
+							Action action = null;
+							try {
+								action = new Action(from, to, turn);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+
+							// check if action is admissible and if it is, add it to list possibleActions
+							try {
+								isCorrectMove(state.clone(), action);
+								possibleActions.add(action);
+
+							} catch (Exception e) {
+
+							}
+						} else {
+							// there is a pawn in the same row and it cannot be crossed
+							break;
+						}
+					}
+
+					// search on right of pawn
+					for (int k=j+1; k<state.getBoard().length; k++) {
+
+
+						// break if pawn is out of citadels and it is moving on a citadel
+						if (!citadels.contains(state.getBox(i, j)) && citadels.contains(state.getBox(i, k))) {
+							break;
+						}
+
+						// check if we are moving on a empty cell
+						else if (state.getPawn(i, k).equalsPawn(State.Pawn.EMPTY.toString())){
+
+							String from = state.getBox(i, j);
+							String to = state.getBox(i, k);
+
+							Action action = null;
+							try {
+								action = new Action(from, to, turn);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+
+							// check if action is admissible and if it is, add it to list possibleActions
+							try {
+								isCorrectMove(state.clone(), action);
+								possibleActions.add(action);
+
+							} catch (Exception e) {
+
+							}
+						} else {
+							// there is a pawn in the same row and it cannot be crossed
+							break;
+						}
+					}
+				}
+
+			}
+		}
+		return possibleActions;
+	}
+
+	@Override
+	public State getInitialState() {
+		return null;
+	}
+
+	@Override
+	public State.Turn getPlayer(State state) {
+		return state.getTurn();
+	}
+
+	@Override
+	public State.Turn[] getPlayers() {
+		return new State.Turn[0];
+	}
+
+	@Override
+	public State getResult(State state, Action action) {
+		state = this.movePawn(state.clone(), action);
+
+		if (state.getTurn().equalsTurn("W")) {
+			state = this.checkCaptureBlack(state, action);
+		} else if (state.getTurn().equalsTurn("B")) {
+			state = this.checkCaptureWhite(state, action);
+		}
+		return state;
+	}
+
+	@Override
+	public double getUtility(State state, State.Turn turn) {
+		Heuristic heuristics =null;
+		if (turn.equals(State.Turn.WHITE)) {
+			//heuristics = new WhiteHeuristic(state);
+		} else {
+			heuristics = new BlackHeuristic(state);
+		}
+		return  heuristics.evaluateState();
+	}
+
+	@Override
+	public boolean isTerminal(State state) {
+		if (state.getTurn().equals(State.Turn.WHITEWIN) || state.getTurn().equals(State.Turn.BLACKWIN) || state.getTurn().equals(State.Turn.DRAW)) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
+	
 
 }

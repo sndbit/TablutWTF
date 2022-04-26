@@ -8,6 +8,7 @@ import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.GameAshtonTablut;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
+import it.unibo.ai.didattica.competition.tablut.heuristic.MyIterativeDeepeningAlphaBetaSearch;
 
 public class TablutWTFClient extends TablutClient {
 
@@ -121,7 +122,7 @@ public class TablutWTFClient extends TablutClient {
                     System.out.println("\nSearching a suitable move... ");
 
                     // search the best move in search tree
-                    Action a = findBestMove(tablutGame, state);
+                    Action a = chooseMove(tablutGame, state);
 
                     System.out.println("\nAction selected: " + a.toString());
                     try {
@@ -162,7 +163,7 @@ public class TablutWTFClient extends TablutClient {
                     System.out.println("\nSearching a suitable move... ");
 
                     // search the best move in search tree
-                    Action a = findBestMove(tablutGame, state);
+                    Action a = chooseMove(tablutGame, state);
 
                     System.out.println("\nAction selected: " + a.toString());
                     try {
@@ -200,13 +201,8 @@ public class TablutWTFClient extends TablutClient {
     }
 
 
-    /**
-     * Method that find a suitable moves searching in game tree
-     * @param tablutGame Current game
-     * @param state Current state
-     * @return Action that is been evaluated as best
-     */
-    private Action findBestMove(GameAshtonTablut tablutGame, State state) {
+    
+    private Action chooseMove(GameAshtonTablut tablutGame, State state) {
 
         MyIterativeDeepeningAlphaBetaSearch search = new MyIterativeDeepeningAlphaBetaSearch(tablutGame, Double.MIN_VALUE, Double.MAX_VALUE, this.timeout - 2 );
         return search.makeDecision(state);
