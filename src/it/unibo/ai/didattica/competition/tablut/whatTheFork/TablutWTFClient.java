@@ -24,6 +24,7 @@ public class TablutWTFClient extends TablutClient {
         String name = "PlayerWTF";
         String ipAddress = "localhost";
         int timeout = 60;
+        
 
         if (args.length < 1) {
             System.out.println("You must specify which player you are (WHITE or BLACK)");
@@ -95,6 +96,7 @@ public class TablutWTFClient extends TablutClient {
         System.out.println("Server: " + this.serverIp + "\n");
 
 
+        int contaMosse=0;
         // still alive until you are playing
         while (true) {
 
@@ -168,6 +170,7 @@ public class TablutWTFClient extends TablutClient {
                     System.out.println("\nAction selected: " + a.toString());
                     try {
                         this.write(a);
+                        contaMosse++;
                     } catch (ClassNotFoundException | IOException e) {
                         e.printStackTrace();
                     }
@@ -188,6 +191,7 @@ public class TablutWTFClient extends TablutClient {
                 // if I WIN
                 else if (state.getTurn().equals(StateTablut.Turn.BLACKWIN)) {
                     System.out.println("YOU WIN!");
+                    System.out.println("VINTO IN "+contaMosse+" MOSSE------****^^^^");
                     System.exit(0);
                 }
 

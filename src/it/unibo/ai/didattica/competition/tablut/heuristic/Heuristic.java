@@ -37,13 +37,13 @@ public abstract class Heuristic {
     	int[] kingposition=new int[2];
     	kingposition=getKingPosition(state);
     	State.Pawn[][] board=state.getBoard();
-    	if(board[kingposition[0]][kingposition[1]+1].equalsPawn("B"))
+    	if(kingposition[1]!=8 && board[kingposition[0]][kingposition[1]+1].equalsPawn("B"))
     		c++;
-    	if(board[kingposition[0]][kingposition[1]-1].equalsPawn("B"))
+    	if(kingposition[1]!=0 && board[kingposition[0]][kingposition[1]-1].equalsPawn("B"))
     		c++;
-    	if(board[kingposition[0]+1][kingposition[1]].equalsPawn("B"))
+    	if(kingposition[0]!=8 && board[kingposition[0]+1][kingposition[1]].equalsPawn("B"))
     		c++;
-    	if(board[kingposition[0]-1][kingposition[1]].equalsPawn("B"))
+    	if(kingposition[0]!=0 && board[kingposition[0]-1][kingposition[1]].equalsPawn("B"))
     		c++;
     	return c;
     		
