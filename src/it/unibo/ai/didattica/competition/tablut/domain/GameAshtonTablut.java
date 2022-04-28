@@ -17,6 +17,7 @@ import java.util.logging.SimpleFormatter;
 import it.unibo.ai.didattica.competition.tablut.exceptions.*;
 import it.unibo.ai.didattica.competition.tablut.heuristic.BlackHeuristic;
 import it.unibo.ai.didattica.competition.tablut.heuristic.Heuristic;
+import it.unibo.ai.didattica.competition.tablut.heuristic.WhiteHeuristic;
 
 /**
  * 
@@ -82,7 +83,7 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 		this.loggGame = Logger.getLogger("GameLog");
 		loggGame.addHandler(this.fh);
 		this.fh.setFormatter(new SimpleFormatter());
-		loggGame.setLevel(Level.FINE);
+		loggGame.setLevel(Level.OFF);
 		loggGame.fine("Players:\t" + whiteName + "\tvs\t" + blackName);
 		loggGame.fine("Repeated moves allowed:\t" + repeated_moves_allowed + "\tCache:\t" + cache_size);
 		loggGame.fine("Inizio partita");
@@ -507,7 +508,7 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 		// ho il re sotto
 		if (a.getRowTo() < state.getBoard().length - 2
 				&& state.getPawn(a.getRowTo() + 1, a.getColumnTo()).equalsPawn("K")) {
-			System.out.println("Ho il re sotto");
+			//System.out.println("Ho il re sotto");
 			// re sul trono
 			if (state.getBox(a.getRowTo() + 1, a.getColumnTo()).equals("e5")) {
 				if (state.getPawn(5, 4).equalsPawn("B") && state.getPawn(4, 5).equalsPawn("B")
@@ -755,14 +756,10 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 	}
 //----------------------************-----
 	
-	public boolean isCorrectMove(State state, Action a) throws BoardException, ActionException, StopException, PawnException, DiagonalException, ClimbingException,
-	ThroneException, OccupitedException, ClimbingCitadelException, CitadelException {
-		/*Credits to Galassi*/
-		this.loggGame.fine(a.toString());
+	public boolean isCorrectMove(State state, Action a) {
 		// controllo la mossa
 		if (a.getTo().length() != 2 || a.getFrom().length() != 2) {
-			this.loggGame.warning("Formato mossa errato");
-			throw new ActionException(a);
+			return false;
 		}
 		int columnFrom = a.getColumnFrom();
 		int columnTo = a.getColumnTo();
@@ -773,37 +770,31 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 		if (columnFrom > state.getBoard().length - 1 || rowFrom > state.getBoard().length - 1
 				|| rowTo > state.getBoard().length - 1 || columnTo > state.getBoard().length - 1 || columnFrom < 0
 				|| rowFrom < 0 || rowTo < 0 || columnTo < 0) {
-			this.loggGame.warning("Mossa fuori tabellone");
-			throw new BoardException(a);
+			return false;
 		}
 
 		// controllo che non vada sul trono
 		if (state.getPawn(rowTo, columnTo).equalsPawn(State.Pawn.THRONE.toString())) {
-			this.loggGame.warning("Mossa sul trono");
-			throw new ThroneException(a);
+			return false;
 		}
 
 		// controllo la casella di arrivo
 		if (!state.getPawn(rowTo, columnTo).equalsPawn(State.Pawn.EMPTY.toString())) {
-			this.loggGame.warning("Mossa sopra una casella occupata");
-			throw new OccupitedException(a);
+			return false;
 		}
 		if (this.citadels.contains(state.getBox(rowTo, columnTo))
 				&& !this.citadels.contains(state.getBox(rowFrom, columnFrom))) {
-			this.loggGame.warning("Mossa che arriva sopra una citadel");
-			throw new CitadelException(a);
+			return false;
 		}
 		if (this.citadels.contains(state.getBox(rowTo, columnTo))
 				&& this.citadels.contains(state.getBox(rowFrom, columnFrom))) {
 			if (rowFrom == rowTo) {
 				if (columnFrom - columnTo > 5 || columnFrom - columnTo < -5) {
-					this.loggGame.warning("Mossa che arriva sopra una citadel");
-					throw new CitadelException(a);
+					return false;
 				}
 			} else {
 				if (rowFrom - rowTo > 5 || rowFrom - rowTo < -5) {
-					this.loggGame.warning("Mossa che arriva sopra una citadel");
-					throw new CitadelException(a);
+					return false;
 				}
 			}
 
@@ -811,29 +802,25 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 
 		// controllo se cerco di stare fermo
 		if (rowFrom == rowTo && columnFrom == columnTo) {
-			this.loggGame.warning("Nessuna mossa");
-			throw new StopException(a);
+			return false;
 		}
 
 		// controllo se sto muovendo una pedina giusta
 		if (state.getTurn().equalsTurn(State.Turn.WHITE.toString())) {
 			if (!state.getPawn(rowFrom, columnFrom).equalsPawn("W")
 					&& !state.getPawn(rowFrom, columnFrom).equalsPawn("K")) {
-				this.loggGame.warning("Giocatore " + a.getTurn() + " cerca di muovere una pedina avversaria");
-				throw new PawnException(a);
+				return false;
 			}
 		}
 		if (state.getTurn().equalsTurn(State.Turn.BLACK.toString())) {
 			if (!state.getPawn(rowFrom, columnFrom).equalsPawn("B")) {
-				this.loggGame.warning("Giocatore " + a.getTurn() + " cerca di muovere una pedina avversaria");
-				throw new PawnException(a);
+				return false;
 			}
 		}
 
 		// controllo di non muovere in diagonale
 		if (rowFrom != rowTo && columnFrom != columnTo) {
-			this.loggGame.warning("Mossa in diagonale");
-			throw new DiagonalException(a);
+			return false;
 		}
 
 		// controllo di non scavalcare pedine
@@ -842,34 +829,28 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 				for (int i = columnTo; i < columnFrom; i++) {
 					if (!state.getPawn(rowFrom, i).equalsPawn(State.Pawn.EMPTY.toString())) {
 						if (state.getPawn(rowFrom, i).equalsPawn(State.Pawn.THRONE.toString())) {
-							this.loggGame.warning("Mossa che scavalca il trono");
-							throw new ClimbingException(a);
+							return false;
 						} else {
-							this.loggGame.warning("Mossa che scavalca una pedina");
-							throw new ClimbingException(a);
+							return false;
 						}
 					}
 					if (this.citadels.contains(state.getBox(rowFrom, i))
 							&& !this.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
-						this.loggGame.warning("Mossa che scavalca una citadel");
-						throw new ClimbingCitadelException(a);
+						return false;
 					}
 				}
 			} else {
 				for (int i = columnFrom + 1; i <= columnTo; i++) {
 					if (!state.getPawn(rowFrom, i).equalsPawn(State.Pawn.EMPTY.toString())) {
 						if (state.getPawn(rowFrom, i).equalsPawn(State.Pawn.THRONE.toString())) {
-							this.loggGame.warning("Mossa che scavalca il trono");
-							throw new ClimbingException(a);
+							return false;
 						} else {
-							this.loggGame.warning("Mossa che scavalca una pedina");
-							throw new ClimbingException(a);
+							return false;
 						}
 					}
 					if (this.citadels.contains(state.getBox(rowFrom, i))
 							&& !this.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
-						this.loggGame.warning("Mossa che scavalca una citadel");
-						throw new ClimbingCitadelException(a);
+						return false;
 					}
 				}
 			}
@@ -878,34 +859,28 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 				for (int i = rowTo; i < rowFrom; i++) {
 					if (!state.getPawn(i, columnFrom).equalsPawn(State.Pawn.EMPTY.toString())) {
 						if (state.getPawn(i, columnFrom).equalsPawn(State.Pawn.THRONE.toString())) {
-							this.loggGame.warning("Mossa che scavalca il trono");
-							throw new ClimbingException(a);
+							return false;
 						} else {
-							this.loggGame.warning("Mossa che scavalca una pedina");
-							throw new ClimbingException(a);
+							return false;
 						}
 					}
 					if (this.citadels.contains(state.getBox(i, columnFrom))
 							&& !this.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
-						this.loggGame.warning("Mossa che scavalca una citadel");
-						throw new ClimbingCitadelException(a);
+						return false;
 					}
 				}
 			} else {
 				for (int i = rowFrom + 1; i <= rowTo; i++) {
 					if (!state.getPawn(i, columnFrom).equalsPawn(State.Pawn.EMPTY.toString())) {
 						if (state.getPawn(i, columnFrom).equalsPawn(State.Pawn.THRONE.toString())) {
-							this.loggGame.warning("Mossa che scavalca il trono");
-							throw new ClimbingException(a);
+							return false;
 						} else {
-							this.loggGame.warning("Mossa che scavalca una pedina");
-							throw new ClimbingException(a);
+							return false;
 						}
 					}
 					if (this.citadels.contains(state.getBox(i, columnFrom))
 							&& !this.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
-						this.loggGame.warning("Mossa che scavalca una citadel");
-						throw new ClimbingCitadelException(a);
+						return false;
 					}
 				}
 			}
@@ -951,13 +926,11 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 							}
 
 							// check if action is admissible and if it is, add it to list possibleActions
-							try {
-								isCorrectMove(state.clone(), action);
+							
+							if(isCorrectMove(state.clone(), action)) {
 								possibleActions.add(action);
-
-							} catch (Exception e) {
-
 							}
+							
 						} else {
 							// there is a pawn in the same column and it cannot be crossed
 							break;
@@ -986,13 +959,10 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 							}
 
 							// check if action is admissible and if it is, add it to list possibleActions
-							try {
-								isCorrectMove(state.clone(), action);
+							if(isCorrectMove(state.clone(), action)) {
 								possibleActions.add(action);
-
-							} catch (Exception e) {
-
 							}
+							
 						} else {
 							// there is a pawn in the same column and it cannot be crossed
 							break;
@@ -1022,13 +992,10 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 							}
 
 							// check if action is admissible and if it is, add it to list possibleActions
-							try {
-								isCorrectMove(state.clone(), action);
+							if(isCorrectMove(state.clone(), action)) {
 								possibleActions.add(action);
-
-							} catch (Exception e) {
-
 							}
+							
 						} else {
 							// there is a pawn in the same row and it cannot be crossed
 							break;
@@ -1058,12 +1025,8 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 							}
 
 							// check if action is admissible and if it is, add it to list possibleActions
-							try {
-								isCorrectMove(state.clone(), action);
+							if(isCorrectMove(state.clone(), action)) {
 								possibleActions.add(action);
-
-							} catch (Exception e) {
-
 							}
 						} else {
 							// there is a pawn in the same row and it cannot be crossed
@@ -1108,7 +1071,7 @@ public class GameAshtonTablut implements Game, aima.core.search.adversarial.Game
 	public double getUtility(State state, State.Turn turn) {
 		Heuristic heuristics =null;
 		if (turn.equals(State.Turn.WHITE)) {
-			//heuristics = new WhiteHeuristic(state);
+			heuristics = new WhiteHeuristic(state);
 		} else {
 			heuristics = new BlackHeuristic(state);
 		}
