@@ -40,10 +40,10 @@ public class BlackHeuristic extends Heuristic {
 
 	@Override
 	public double evaluateState() {
-		Turn turn=state.getTurn();
-		if ((turn.equals(State.Turn.BLACK) && state.getTurn().equals(State.Turn.BLACKWIN)))
+		//Turn turn=state.getTurn();
+		if (state.getTurn().equals(State.Turn.BLACKWIN))
 			return Double.POSITIVE_INFINITY;
-		else if ((turn.equals(State.Turn.BLACK) && state.getTurn().equals(State.Turn.WHITEWIN)))
+		else if (state.getTurn().equals(State.Turn.WHITEWIN))
 			return Double.NEGATIVE_INFINITY;
 		else {
 			totalBlacks= (double) state.getNumberOf(State.Pawn.BLACK) / Heuristic.NUM_BLACK;

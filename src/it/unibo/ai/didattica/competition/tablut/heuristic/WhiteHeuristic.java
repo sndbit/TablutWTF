@@ -1,6 +1,7 @@
 package it.unibo.ai.didattica.competition.tablut.heuristic;
 
 import it.unibo.ai.didattica.competition.tablut.domain.State;
+import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
 public class WhiteHeuristic extends Heuristic {
 	
@@ -34,28 +35,33 @@ public class WhiteHeuristic extends Heuristic {
 	public WhiteHeuristic(State state) {
 		super(state);
 		weight_values=new double[5];
-		weight_values[WEIGHT_BLACKS_EATEN]=20;   //25 ;//27.40;
-		weight_values[WEIGHT_WHITES_SURVIVED]=30;   //45;//47.95;
-		weight_values[WEIGHT_BLACKS_AROUND_KING]=17;  //22;//24.65;
-		weight_values[WEIGHT_WHITE_POSITIONS]=8;    //8;
-		weight_values[WEIGHT_STAR_POSITIONS]=25 ;
+		weight_values[WEIGHT_BLACKS_EATEN]=30; //20  //25 ;//27.40;
+		weight_values[WEIGHT_WHITES_SURVIVED]=40;  //45;//47.95;
+		weight_values[WEIGHT_BLACKS_AROUND_KING]=10;//17  //22;//24.65;
+		weight_values[WEIGHT_WHITE_POSITIONS]=0;    //8;
+		weight_values[WEIGHT_STAR_POSITIONS]=20;
 	}
 
 	@Override
 	public double evaluateState() {
-		totalWhites=(double) state.getNumberOf(State.Pawn.WHITE) / Heuristic.NUM_WHITE;
-		blacksEaten=(double) (Heuristic.NUM_BLACK - state.getNumberOf(State.Pawn.BLACK)) / Heuristic.NUM_BLACK;
-		double blacksAroundKing= (double) (positionsAroundKing(state) - checkPawnsNearKing(state)) / positionsAroundKing(state);
-		double whitePawnsOnWhitePositions= getWhitePositionsOccupied();
-		double kingNearEscapeStarPositions= calculateEscapeValue();
+		//Turn turn=state.getTurn();
+		if ((state.getTurn().equals(State.Turn.WHITEWIN)))
+			return Double.POSITIVE_INFINITY;
+		else if (state.getTurn().equals(State.Turn.BLACKWIN))
+			return Double.NEGATIVE_INFINITY;
+		else {
+			totalWhites=(double) state.getNumberOf(State.Pawn.WHITE) / Heuristic.NUM_WHITE;
+			blacksEaten=(double) (Heuristic.NUM_BLACK - state.getNumberOf(State.Pawn.BLACK)) / Heuristic.NUM_BLACK;
+			double blacksAroundKing= (double) (positionsAroundKing(state) - checkPawnsNearKing(state)) / positionsAroundKing(state);
+			//double whitePawnsOnWhitePositions= getWhitePositionsOccupied();
+			double kingNearEscapeStarPositions= calculateEscapeValue();
 		
-		
-		return weight_values[WEIGHT_BLACKS_EATEN]*blacksEaten+
+			return weight_values[WEIGHT_BLACKS_EATEN]*blacksEaten+
 				weight_values[WEIGHT_WHITES_SURVIVED]*totalWhites+
 				weight_values[WEIGHT_BLACKS_AROUND_KING]*blacksAroundKing+
-				weight_values[WEIGHT_WHITE_POSITIONS]*whitePawnsOnWhitePositions+
+				//weight_values[WEIGHT_WHITE_POSITIONS]*whitePawnsOnWhitePositions+
 				weight_values[WEIGHT_STAR_POSITIONS]*kingNearEscapeStarPositions;
-
+		}
 	}
 	
 	
