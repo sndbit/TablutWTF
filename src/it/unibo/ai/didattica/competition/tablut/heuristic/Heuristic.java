@@ -54,7 +54,7 @@ public abstract class Heuristic {
     	int[] kingposition=new int[2];
     	kingposition=getKingPosition(state);
     	if(kingposition[0]==4 && kingposition[1]==4) {
-    		result=4; //4 pawns required to eat the king
+    		result=4;
     	}
     	else if( (kingposition[0]==3 && kingposition[1]==4) ||
     			(kingposition[0]==5 && kingposition[1]==4)  ||  

@@ -49,24 +49,6 @@ public class TablutWTFClient extends TablutClient {
             }
             ipAddress = args[2];
         }
-        /**
-        if (args.length == 4) {
-            try {
-                timeout = Integer.parseInt(args[1]);
-            } catch (NumberFormatException e){
-                System.out.println("Timeout must be an integer representing seconds");
-                System.out.println("USAGE: ./runmyplayer <black|white> <timeout-in-seconds> <server-ip> <debug>");
-                System.exit(-1);
-            }
-            ipAddress = args[2];
-            if(args[3].equals("debug")) {
-                debug = true;
-            } else {
-                System.out.println("The last argument can be only 'debug' and it allow to print logs during search");
-                System.out.println("USAGE: ./runmyplayer <black|white> <timeout-in-seconds> <server-ip> <debug>");
-                System.exit(-1);
-            }
-        } **/
 
         TablutWTFClient client = new TablutWTFClient(role, name, timeout, ipAddress);
         client.run();
@@ -75,32 +57,32 @@ public class TablutWTFClient extends TablutClient {
     @Override
     public void run() {
 
-        // send name of your group to the server saved in variable "name"
+        
         try {
             this.declareName();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // set type of state and WHITE must do the first player
+        
         State state = new StateTablut();
         state.setTurn(State.Turn.WHITE);
 
-        // set type of game
+        
         GameAshtonTablut tablutGame = new GameAshtonTablut(0, -1, "logs", "white_ai", "black_ai");
 
 
-        // attributes depends to parameters passed to main
+        
         System.out.println("Player: " + (this.getPlayer().equals(State.Turn.BLACK) ? "BLACK" : "WHITE" ));
         System.out.println("Timeout: " + this.timeout +" s");
         System.out.println("Server: " + this.serverIp + "\n");
 
 
         int contaMosse=0;
-        // still alive until you are playing
+        
         while (true) {
 
-            // update the current state from the server
+            
             try {
                 this.read();
             } catch (ClassNotFoundException | IOException e1) {
@@ -136,7 +118,7 @@ public class TablutWTFClient extends TablutClient {
 
                 }
 
-                // if is turn of oppenent (BLACK)
+                // if is turn of opponent (BLACK)
                 else if (state.getTurn().equals(StateTablut.Turn.BLACK)) {
                     System.out.println("Waiting for your opponent move...\n");
                 }
@@ -180,7 +162,7 @@ public class TablutWTFClient extends TablutClient {
 
                 }
 
-                // if is turn of oppenent (WHITE)
+                // if is turn of opponent (WHITE)
                 else if (state.getTurn().equals(StateTablut.Turn.WHITE)) {
                     System.out.println("Waiting for your opponent move...\n");
                 }
@@ -201,6 +183,7 @@ public class TablutWTFClient extends TablutClient {
                 // if DRAW
                 else if (state.getTurn().equals(StateTablut.Turn.DRAW)) {
                     System.out.println("DRAW!");
+                    System.out.println("PAREGGIO IN "+contaMosse+" MOSSE------****^^^^");
                     System.exit(0);
                 }
             }

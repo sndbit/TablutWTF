@@ -40,7 +40,6 @@ public class BlackHeuristic extends Heuristic {
 
 	@Override
 	public double evaluateState() {
-		//Turn turn=state.getTurn();
 		if (state.getTurn().equals(State.Turn.BLACKWIN))
 			return Double.POSITIVE_INFINITY;
 		else if (state.getTurn().equals(State.Turn.WHITEWIN))

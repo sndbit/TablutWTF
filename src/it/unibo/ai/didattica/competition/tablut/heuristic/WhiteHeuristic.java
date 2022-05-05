@@ -35,16 +35,15 @@ public class WhiteHeuristic extends Heuristic {
 	public WhiteHeuristic(State state) {
 		super(state);
 		weight_values=new double[5];
-		weight_values[WEIGHT_BLACKS_EATEN]=25; //20  //25 ;//27.40;
-		weight_values[WEIGHT_WHITES_SURVIVED]=30;  //45;//47.95;
-		weight_values[WEIGHT_BLACKS_AROUND_KING]=15;//17  //22;//24.65;
-		weight_values[WEIGHT_WHITE_POSITIONS]=10;    //8;
+		weight_values[WEIGHT_BLACKS_EATEN]=25; 
+		weight_values[WEIGHT_WHITES_SURVIVED]=30;  
+		weight_values[WEIGHT_BLACKS_AROUND_KING]=15;
+		weight_values[WEIGHT_WHITE_POSITIONS]=10;    
 		weight_values[WEIGHT_STAR_POSITIONS]=20;
 	}
 
 	@Override
 	public double evaluateState() {
-		//Turn turn=state.getTurn();
 		if ((state.getTurn().equals(State.Turn.WHITEWIN)))
 			return Double.POSITIVE_INFINITY;
 		else if (state.getTurn().equals(State.Turn.BLACKWIN))
@@ -91,7 +90,7 @@ public class WhiteHeuristic extends Heuristic {
 	}
 	
 	
-	private int pathsRowWithNoBlacks(int[] kingPosition) { //qua ciclo su riga
+	private int pathsRowWithNoBlacks(int[] kingPosition) {
 		State.Pawn[][] board = state.getBoard();
 		boolean occupiedPath=false;
 		int openPaths=0;

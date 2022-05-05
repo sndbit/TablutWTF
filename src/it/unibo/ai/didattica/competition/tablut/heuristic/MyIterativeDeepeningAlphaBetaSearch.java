@@ -22,7 +22,7 @@ public class MyIterativeDeepeningAlphaBetaSearch extends IterativeDeepeningAlpha
 	@Override
 	public Action makeDecision(State state) {
 	    Action a = super.makeDecision(state);
-	    System.out.println("Explored a total of " + getMetrics().get(METRICS_NODES_EXPANDED) + " nodes, reaching a depth limit of " + getMetrics().get(METRICS_MAX_DEPTH));
+	    System.out.println("Totale nodi esplorati: " + getMetrics().get(METRICS_NODES_EXPANDED) + " , profondita raggiunta: " + getMetrics().get(METRICS_MAX_DEPTH));
 	    return  a;
 	}
 
