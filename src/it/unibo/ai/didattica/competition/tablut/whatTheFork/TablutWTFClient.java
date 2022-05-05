@@ -129,6 +129,7 @@ public class TablutWTFClient extends TablutClient {
                     System.out.println("\nAction selected: " + a.toString());
                     try {
                         this.write(a);
+                        contaMosse++;
                     } catch (ClassNotFoundException | IOException e) {
                         e.printStackTrace();
                     }
@@ -142,6 +143,7 @@ public class TablutWTFClient extends TablutClient {
                 // if I WIN
                 else if (state.getTurn().equals(StateTablut.Turn.WHITEWIN)) {
                     System.out.println("YOU WIN!");
+                    System.out.println("VINTO IN "+contaMosse+" MOSSE------****^^^^");
                     System.exit(0);
                 }
                 // if I LOSE
@@ -152,6 +154,7 @@ public class TablutWTFClient extends TablutClient {
                 // if DRAW
                 else if (state.getTurn().equals(StateTablut.Turn.DRAW)) {
                     System.out.println("DRAW!");
+                    System.out.println("PAREGGIO IN "+contaMosse+" MOSSE------****^^^^");
                     System.exit(0);
                 }
 
