@@ -2,7 +2,6 @@ package it.unibo.ai.didattica.competition.tablut.heuristic;
 
 
 import it.unibo.ai.didattica.competition.tablut.domain.State;
-import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
 public class BlackHeuristic extends Heuristic {
 
@@ -31,9 +30,9 @@ public class BlackHeuristic extends Heuristic {
 		super(state);
 		weight_values=new double[4];
 		weight_values[WEIGHT_BLACKS_SURVIVED]=35;
-		weight_values[WEIGHT_WHITES_EATEN]=48;
-		weight_values[WEIGHT_AROUND_KING]=15;
-		weight_values[WEIGHT_STRATEGIC_POSITIONS]=2;
+		weight_values[WEIGHT_WHITES_EATEN]=40;
+		weight_values[WEIGHT_AROUND_KING]=20;
+		weight_values[WEIGHT_STRATEGIC_POSITIONS]=5;
 		
 		
 	}

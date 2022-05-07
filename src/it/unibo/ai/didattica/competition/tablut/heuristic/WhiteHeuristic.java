@@ -1,7 +1,6 @@
 package it.unibo.ai.didattica.competition.tablut.heuristic;
 
 import it.unibo.ai.didattica.competition.tablut.domain.State;
-import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
 public class WhiteHeuristic extends Heuristic {
 	
@@ -16,16 +15,6 @@ public class WhiteHeuristic extends Heuristic {
 	private double totalWhites;
 	private double blacksEaten;
 	
-	private final static int[][] starPositions = {
-			      {0,1},{0,2}, 
-			      {0,6},{0,7},
-			      {1,0},{1,8},
-			      {2,0},{2,8},
-                  {6,0},{6,8},
-                  {7,0},{7,8},
-                  {8,1},{8,2}, 
-                  {8,6},{8,7}
-	};
 	
 	private final static int[][] whitePositions = {
 			{2,7},{1,6},{1,2},{2,1}
